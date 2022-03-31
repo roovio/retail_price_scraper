@@ -20,7 +20,7 @@ class Compx(Retailer):
         r = []
         for item_main_div in parser.find_all(class_='catalogCard-main'):
             title = item_main_div.find(class_='catalogCard-title').text.strip()
-            price = item_main_div.find(class_='catalogCard-price').text.replace(' ','').replace('грн','').strip()
+            price = int(item_main_div.find(class_='catalogCard-price').text.replace(' ','').replace('грн','').strip())
             if matches_search_keyword(title, search_keyword):
                 r.append((title,price))
         return r
