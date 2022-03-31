@@ -1,11 +1,13 @@
 from typing import Iterable
 from lib.retailers.interface import Retailer
 from lib.retailers.compx import Compx
+from lib.retailers.comtrading import Comtrading
 
 class Factory:
     def __init__(self):
         self._map = dict(
-            CompX=Compx(),
+            compx=Compx(),
+            comtrading=Comtrading(),
             )
 
     def get_retailer_list(self) -> str:
