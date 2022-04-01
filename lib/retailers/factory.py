@@ -2,12 +2,14 @@ from typing import Iterable
 from lib.retailers.interface import Retailer
 from lib.retailers.compx import Compx
 from lib.retailers.comtrading import Comtrading
+from lib.retailers.utc import Utc
 
 class Factory:
     def __init__(self):
         self._map = dict(
             compx=Compx(),
             comtrading=Comtrading(),
+            utc=Utc(),
             )
 
     def get_retailer_list(self) -> str:
