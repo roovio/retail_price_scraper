@@ -22,7 +22,6 @@ def match_gpu_name_search_keyword(entry: str, search_term: str) -> bool:
             return False
     if is_ti:
         if not re.search(base_card_regex_pattern + r' *T[iI]', entry):
-            print(base_card_regex_pattern + r' *T[iI] ', entry)
             return False
     else:
         if re.search(base_card_regex_pattern + r' *T[iI]', entry):
