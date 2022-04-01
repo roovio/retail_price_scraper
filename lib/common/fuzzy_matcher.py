@@ -9,8 +9,10 @@ def match_gpu_name_search_keyword(entry: str, search_term: str) -> bool:
     is_lhr = 'LHR' in search_term
     is_ti = 'Ti' in search_term
     is_super = 'Super' in search_term
+
+    base_card_regex_pattern = base_card.replace(r' ',r' *')
  
-    if base_card not in entry:
+    if not re.search(base_card_regex_pattern, entry):
         return  False
     if is_lhr:
         if 'LHR' not in entry:
@@ -19,16 +21,17 @@ def match_gpu_name_search_keyword(entry: str, search_term: str) -> bool:
         if 'LHR' in entry:
             return False
     if is_ti:
-        if not re.search(f'{base_card} *T[iI] ', entry):
+        if not re.search(base_card_regex_pattern + r' *T[iI]', entry):
+            print(base_card_regex_pattern + r' *T[iI] ', entry)
             return False
     else:
-        if re.search(f'{base_card} *T[iI] ', entry):
+        if re.search(base_card_regex_pattern + r' *T[iI]', entry):
             return False
     if is_super:
-        if not ( re.search(f'{base_card}S ', entry) or re.search(f'{base_card} Super', entry) ):
+        if not ( re.search(base_card_regex_pattern + r'S', entry) or re.search(base_card_regex_pattern + r' *Super', entry) ):
             return False
     else:
-        if re.search(f'{base_card}S ', entry) or re.search(f'{base_card} Super', entry):
+        if re.search(base_card_regex_pattern + r'S', entry) or re.search(base_card_regex_pattern + r' *Super', entry):
             return False
     return True
 
