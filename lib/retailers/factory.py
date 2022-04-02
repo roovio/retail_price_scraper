@@ -4,6 +4,7 @@ from lib.retailers.compx import Compx
 from lib.retailers.comtrading import Comtrading
 from lib.retailers.utc import Utc
 from lib.retailers.telemart import Telemart
+from lib.retailers.roznica import Roznica
 
 class Factory:
     def __init__(self):
@@ -12,6 +13,7 @@ class Factory:
             comtrading=Comtrading(),
             utc=Utc(),
             telemart=Telemart(),
+            roznica=Roznica(),
             )
 
     def get_retailer_list(self) -> str:
