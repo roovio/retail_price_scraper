@@ -16,6 +16,7 @@ def show(search_item: str, retailer_name: str):
     d = []
     for name,retailer in retailer_factory.get_retailer_iterator() :
         if retailer_name is None or retailer_name == name:
+            info('%s ...', name)
             scrape_result: list[ItemPosition] = retailer.get_prices(search_item)
             for item_pos in scrape_result:
                 d.append(dict(retailer=name,search=search_item,item=item_pos.title,price=item_pos.price,url=item_pos.url))
