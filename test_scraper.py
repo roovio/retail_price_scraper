@@ -1,6 +1,6 @@
 import argparse, yaml, logging
 from logging import error, info
-from lib.retailers.interface import Retailer
+from lib.retailers.interface import ItemPosition
 from lib.retailers.factory import Factory as RetailerFactory
 import pandas as pd
 
@@ -16,9 +16,9 @@ def show(search_item: str, retailer_name: str):
     d = []
     for name,retailer in retailer_factory.get_retailer_iterator() :
         if retailer_name is None or retailer_name == name:
-            scrape_result: list[tuple[str,float]] = retailer.get_prices(search_item)
-            for item_name, item_price in scrape_result:
-                d.append(dict(retailer=name,search=search_item,item=item_name,price=item_price))
+            scrape_result: list[ItemPosition] = retailer.get_prices(search_item)
+            for item_pos in scrape_result:
+                d.append(dict(retailer=name,search=search_item,item=item_pos.title,price=item_pos.price,url=item_pos.url))
     df = pd.DataFrame.from_dict(d)
     if len(df):
         df = df.sort_values('price',ascending=True)
