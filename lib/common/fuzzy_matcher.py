@@ -27,10 +27,10 @@ def match_gpu_name_search_keyword(entry: str, search_term: str) -> bool:
         if re.search(base_card_regex_pattern + r' *T[iI]', entry):
             return False
     if is_super:
-        if not ( re.search(base_card_regex_pattern + r'S', entry) or re.search(base_card_regex_pattern + r' *Super', entry) ):
+        if not ( re.search(base_card_regex_pattern + r'S', entry) or re.search(base_card_regex_pattern + r'.*Super', entry) ):
             return False
     else:
-        if re.search(base_card_regex_pattern + r'S', entry) or re.search(base_card_regex_pattern + r' *Super', entry):
+        if re.search(base_card_regex_pattern + r'S', entry) or re.search(base_card_regex_pattern + r'.*Super', entry):
             return False
     return True
 
