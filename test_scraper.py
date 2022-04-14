@@ -1,10 +1,17 @@
-import argparse, yaml, logging
+import argparse, yaml, logging, re
 from logging import error, info
 from lib.retailers.interface import ItemPosition
 from lib.retailers.factory import Factory as RetailerFactory
 import pandas as pd
 
 conf = yaml.safe_load(open('config/scraper.yml', 'r'))
+
+def _in_ignore_list(item: str):
+    if 'ignore' in conf:
+        for ignore_pattern in conf['ignore']:
+            if re.search(ignore_pattern, item):
+                return True
+    return False
 
 
 def show(search_item: str, retailer_name: str):
@@ -19,7 +26,8 @@ def show(search_item: str, retailer_name: str):
             info('%s ...', name)
             scrape_result: list[ItemPosition] = retailer.get_prices(search_item)
             for item_pos in scrape_result:
-                d.append(dict(retailer=name,search=search_item,item=item_pos.title,price=item_pos.price,url=item_pos.url))
+                if not _in_ignore_list(item_pos.title):
+                    d.append(dict(retailer=name,search=search_item,item=item_pos.title,price=item_pos.price,url=item_pos.url))
     df = pd.DataFrame.from_dict(d)
     if len(df):
         df = df.sort_values('price',ascending=True)

@@ -42,4 +42,8 @@ search_keywords:
   - Radeon VII
 
 
+ignore:
+  - NE6166T018J9-161F
+
+
 log_level: INFO
