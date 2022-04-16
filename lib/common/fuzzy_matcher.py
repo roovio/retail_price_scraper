@@ -1,7 +1,7 @@
 import re
 
 def _get_base_card(search_term: str) -> str:
-    return search_term.replace('Ti', '').replace('LHR','').replace('Super','').strip()
+    return search_term.replace('Ti', '').replace('LHR','').replace('Super','').replace('XT','').strip()
 
 
 def match_gpu_name_search_keyword(entry: str, search_term: str) -> bool:
@@ -9,6 +9,7 @@ def match_gpu_name_search_keyword(entry: str, search_term: str) -> bool:
     is_lhr = 'LHR' in search_term
     is_ti = 'Ti' in search_term
     is_super = 'Super' in search_term
+    is_XT = 'XT' in search_term
 
     base_card_regex_pattern = base_card.replace(r' ',r' *')
  
@@ -31,6 +32,13 @@ def match_gpu_name_search_keyword(entry: str, search_term: str) -> bool:
             return False
     else:
         if re.search(base_card_regex_pattern + r'S', entry) or re.search(base_card_regex_pattern + r'.*Super', entry):
+            return False
+
+    if is_XT:
+        if not re.search(base_card_regex_pattern + r' *XT', entry):
+            return False
+    else:
+        if re.search(base_card_regex_pattern + r' *XT', entry):
             return False
     return True
 
