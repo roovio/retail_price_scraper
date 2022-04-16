@@ -15,7 +15,7 @@ class Utc(Retailer):
     def get_prices(self, search_keyword: str) -> list[ItemPosition]:
         base_url = 'https://utc.co.ua'
         request = requests.Request('GET',base_url +'/all-products', params={'keyword':get_query_string_for_search_keyword(search_keyword)}, )
-        response = self._session.send(request.prepare())
+        response = self._session.send(request.prepare(),allow_redirects=False)
         response.raise_for_status()
         parser = BeautifulSoup(response.text, 'html.parser')
         r = []
@@ -23,7 +23,7 @@ class Utc(Retailer):
             title_node = item_main_div.find(class_='product_name')
             title = title_node.text.strip()
             url = base_url + '/' + title_node.get('href')
-            price = int(item_main_div.find(class_='price_container').text.replace(' ','').replace('грн','').strip())
+            price = int(item_main_div.find(class_='price_container').find(class_='price').text.replace(' ','').replace('грн','').strip())
             if matches_search_keyword(title, search_keyword):
                 r.append(ItemPosition(title=title,price=price,url=url))
         return r
