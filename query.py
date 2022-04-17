@@ -31,8 +31,8 @@ def show_latest_prices():
                     price=e.price,
                     price_usd=round(e.price *  exchange_rate_source.get_UAH_USD()) ,
                     url=e.url,
-                    roi_m=roi_months,
-                    daily_profit_usd=daily_profit_usd,
+                    roi_m=round(roi_months,1),
+                    daily_profit_usd=round(daily_profit_usd,2),
                     ) )
     df = pd.DataFrame.from_dict(d)
     if len(df):
