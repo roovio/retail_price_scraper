@@ -1,38 +1,35 @@
 search_keywords:
-  - GTX 1660
-  - GTX 1660 Ti
-  - GTX 1660 Super
-  - GTX 1070
-  - GTX 1080 Ti
-  - RTX 2060
-  - RTX 2060 Super
-  - RTX 2070 Super
-  - RTX 2080
-  - RTX 2080 Super
+    - GTX 1660
+    - GTX 1660 Ti
+    - GTX 1660 Super
+    - GTX 1070
+    - GTX 1080 Ti
+    - RTX 2060
+    - RTX 2060 Super
+    - RTX 2070 Super
+    - RTX 2080
+    - RTX 2080 Super
 
-  - RTX 3060 LHR
-  - RTX 3060 Ti LHR
-  - RTX 3060 Ti
-  - RTX 3070 LHR
-  - RTX 3070
-  - RTX 3070 Ti
-  - RTX 3080 LHR
-  - RTX 3080
-  - RTX 3080 Ti
-  - RTX 3090
-  - RTX A2000
- 
-  - RX 6500 XT
-  - RX 6600
-  - RX 6600 XT
-  - RX 6700 XT
-  - RX 6800
-  - RX 6800 XT
-  - RX 6900 XT
+    - RTX 3060
+    - RTX 3060 Ti
+    - RTX 3070
+    - RTX 3070 Ti
+    - RTX 3080
+    - RTX 3080 Ti
+    - RTX 3090
+    - RTX A2000
+
+    - RX 6500 XT
+    - RX 6600
+    - RX 6600 XT
+    - RX 6700 XT
+    - RX 6800
+    - RX 6800 XT
+    - RX 6900 XT
 
 
 ignore:
-  - NE6166T018J9-161F
+    - NE6166T018J9-161F
 
 
 log_level: INFO
