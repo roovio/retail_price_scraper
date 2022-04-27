@@ -1,3 +1,6 @@
 __pycache__
 .pytest_cache
+/.vscode
 /config/*.db
+/config/dpg.ini
+/config/window.yml

@@ -1,6 +1,7 @@
 import sqlite3, datetime
 from typing import NamedTuple
-
+from lib.common.ignore_filter import IgnoreFilter
+from lib.common.name_strip import NameStrip
 
 class UpdateData(NamedTuple):
     retailer:   str
@@ -16,6 +17,10 @@ class Entry(NamedTuple):
     url:        str
     price:      int
     timestamp:  datetime.datetime
+
+class TimestampPricePair(NamedTuple):
+    timestamp:  datetime.datetime
+    price:      int
 
 
 class Snapshot:
@@ -59,13 +64,26 @@ class Db:
         if last_snapshot_id == 0:
             return entries
 
+        ignore_filter = IgnoreFilter()
+        name_strip = NameStrip()
         result = self.con.execute('SELECT retailer,title,url,price,date,query FROM items_prices WHERE query = ? AND id_snapshot = ?', (query,last_snapshot_id))
         for row in result:
+            if ignore_filter.is_ignored(row[1]):
+                continue
             entries.append( Entry(query=row[5],
                         retailer=row[0],
-                        title=row[1],
+                        title=name_strip.strip(row[1]),
                         url=row[2],
                         price=row[3],
                         timestamp=row[4]))
         return sorted(entries,key=lambda x: x.price)[:5]
         
+
+    def get_distinct_queries(self) -> list [str]:
+        result = self.con.execute('SELECT DISTINCT query FROM items_prices')
+        return [ row[0] for row in result ]
+
+    def get_ts_price_by_query(self, query: str) -> list[TimestampPricePair]:
+        result = self.con.execute('SELECT date,price,title FROM items_prices WHERE query = ?', (query,))
+        ignore_filter =IgnoreFilter()
+        return [ TimestampPricePair(row[0],row[1]) for row in result if not ignore_filter.is_ignored(row[2])]
