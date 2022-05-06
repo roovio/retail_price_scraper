@@ -10,5 +10,6 @@ class NameStrip:
 
     def strip(self, item: str):
         for strip_pattern in self._strip:
-            item = item.replace(strip_pattern, '')
+            re_pattern = re.compile(strip_pattern, re.IGNORECASE)
+            item = re_pattern.sub('',item)
         return item.strip()
