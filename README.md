@@ -12,3 +12,11 @@ Scrapes price data with configured search phrases from retail store webpage, sav
 
 ### Planned
  - https://ukrbay.com.ua
+
+## Screenshots
+
+
+![Latest snapshot view](doc/view_latest_snapshot.png "Latest snapshot view")
+
+![Price dynamics view](doc/view_price_dynamics.png "Price dynamics view")
+
