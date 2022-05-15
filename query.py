@@ -1,4 +1,4 @@
-from cv2 import sort
+import re
 import yaml, datetime, webbrowser
 from lib.common.db import Db
 from lib.common.profitability import Profitability
@@ -17,19 +17,45 @@ conf = load_conf('config/scraper.yml')
 def dprint(*args):
     print(f'{datetime.datetime.now()}', *args)
 
+# def get_item_serialnumber(item: str) -> str:
+#     m = re.search(r'\(([a-zA-Z0-9\- /\\\.]+)\)', item)
+#     return m[1] if m else item
+
+def get_item_legend_key(retailer: str, item: str) -> str:
+    return f'{retailer}_{item}'
+
 def main():
 
     db = Db()
+    
+    last_snapshot_id = db.get_latest_snapshot_id()
+
     exchange_rate_source = ExchangeRateSource()
     profitability = Profitability()
 
-    map_query_pricedata = {}
+    map_query_serialnumberpricesnapshots = {}
 
     def cb_listbox_queries(sender, app_data):
-        items = map_query_pricedata[app_data]
-        data_x,data_y = list(map(list, zip(*items)))
-        data_x = [datetime.datetime.fromisoformat(x).timestamp() for x in data_x]
-        dpg.set_value('scatter_price', [data_x, data_y])
+        buckets = map_query_serialnumberpricesnapshots[app_data]
+        plot_user_data = dpg.get_item_user_data('plot_price_dynamics')
+        # remove existing series
+        for s in plot_user_data['series']:
+            dpg.delete_item(s)
+        plot_user_data['series'] = []
+
+        for serialnumber in sorted(buckets.keys()):
+            itemlist = buckets[serialnumber]
+
+            is_bucket_recent = any([x.snapshot_id == last_snapshot_id for x in itemlist])
+
+            # skip any buckets that are not included in last snapshot
+            if is_bucket_recent:
+                data_x = [item.timestamp for item in itemlist]
+                data_x = [datetime.datetime.fromisoformat(x).timestamp() for x in data_x]
+
+                data_y = [item.price for item in itemlist]
+                plot_user_data['series'].append( dpg.add_line_series(x=data_x, y=data_y, label=serialnumber, parent='y_axis') )
+
         dpg.fit_axis_data('x_axis')
         dpg.fit_axis_data('y_axis')
 
@@ -149,14 +175,20 @@ def main():
 
             queries = [ query for query in db.get_distinct_queries() ]
             for q in queries:
-                map_query_pricedata[q] = db.get_ts_price_by_query(q)
+                items_for_query = db.get_items(q)
+                # group into buckets by item serial number
+                buckets = {}
+                for x in items_for_query:
+                    buckets.setdefault(get_item_legend_key(x.retailer,x.item), []).append(x)
+                map_query_serialnumberpricesnapshots[q] = buckets
 
             with dpg.group(horizontal=True):
-                with dpg.plot(label='price dynamics', width=800, height=800):
+                dpg.add_listbox(tag='listbox_queries', width=150, items=queries, callback=cb_listbox_queries, num_items=len(queries))
+                with dpg.plot(label='price dynamics', width=-1, height=-1, tag='plot_price_dynamics', user_data=dict(series=[])):
+                    dpg.add_plot_legend()
                     dpg.add_plot_axis(dpg.mvXAxis, label='date', tag='x_axis', time=True)
                     dpg.add_plot_axis(dpg.mvYAxis, label='price, UAH', tag='y_axis')
-                    dpg.add_scatter_series([], [], parent='y_axis', tag='scatter_price')
-                dpg.add_listbox(tag='listbox_queries', items=queries, callback=cb_listbox_queries, num_items=len(queries))
+                    #dpg.add_scatter_series([], [], parent='y_axis', tag='scatter_price')
 
 
     dprint('creating viewport')

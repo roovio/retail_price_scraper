@@ -18,9 +18,12 @@ class Entry(NamedTuple):
     price:      int
     timestamp:  datetime.datetime
 
-class TimestampPricePair(NamedTuple):
+class ItemsPriceSnapshot(NamedTuple):
     timestamp:  datetime.datetime
     price:      int
+    item:       str
+    retailer:   str
+    snapshot_id: int
 
 
 class Snapshot:
@@ -46,7 +49,7 @@ class Db:
         self.con.execute('CREATE TABLE IF NOT EXISTS items_prices (id_snapshot integer, date text, retailer text, query text, title text, url text, price integer )')
         self.con.commit()
 
-    def _get_latest_snapshot_id(self):
+    def get_latest_snapshot_id(self):
         cur = self.con.cursor()
         cur.execute('SELECT id_snapshot FROM items_prices ORDER BY id_snapshot DESC LIMIT 1')
         entry = cur.fetchone()
@@ -60,7 +63,7 @@ class Db:
     def get_latest(self, query: str) -> list[Entry]:
         entries: list[Entry] = []
 
-        last_snapshot_id = self._get_latest_snapshot_id()
+        last_snapshot_id = self.get_latest_snapshot_id()
         if last_snapshot_id == 0:
             return entries
 
@@ -83,7 +86,8 @@ class Db:
         result = self.con.execute('SELECT DISTINCT query FROM items_prices')
         return [ row[0] for row in result ]
 
-    def get_ts_price_by_query(self, query: str) -> list[TimestampPricePair]:
-        result = self.con.execute('SELECT date,price,title FROM items_prices WHERE query = ?', (query,))
+    def get_items(self, query: str) -> list[ItemsPriceSnapshot]:
+        result = self.con.execute('SELECT date,price,title,retailer,id_snapshot FROM items_prices WHERE query = ?', (query,))
         ignore_filter =IgnoreFilter()
-        return [ TimestampPricePair(row[0],row[1]) for row in result if not ignore_filter.is_ignored(row[2])]
+        name_strip = NameStrip()
+        return [ ItemsPriceSnapshot(row[0],row[1],name_strip.strip(row[2]),row[3],row[4]) for row in result if not ignore_filter.is_ignored(row[2])]
