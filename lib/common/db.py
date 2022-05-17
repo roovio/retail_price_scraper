@@ -35,7 +35,7 @@ class Snapshot:
         self._update_data.append(UpdateData(**kwargs) )
 
     def commit(self):
-        id_snapshot = self._db._get_latest_snapshot_id() + 1
+        id_snapshot = self._db.get_latest_snapshot_id() + 1
         timestamp = datetime.datetime.now()
         for x in self._update_data:
             self._db.con.execute('INSERT INTO items_prices VALUES (?,?,?,?,?,?,?)', (id_snapshot, timestamp, x.retailer, x.query, x.title,x.url, x.price))
